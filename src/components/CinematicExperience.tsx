@@ -33,7 +33,14 @@ const CinematicExperience: React.FC = () => {
   ];
 
   useEffect(() => {
-    if (!canvasRef.current || !containerRef.current) return;
+    console.log('CinematicExperience: Starting initialization');
+    
+    if (!canvasRef.current || !containerRef.current) {
+      console.log('CinematicExperience: Canvas or container ref not available');
+      return;
+    }
+
+    console.log('CinematicExperience: Setting up Three.js scene');
 
     // Scene setup
     const scene = new THREE.Scene();
@@ -52,6 +59,8 @@ const CinematicExperience: React.FC = () => {
     cameraRef.current = camera;
     rendererRef.current = renderer;
 
+    console.log('CinematicExperience: Creating infinity path');
+
     // Create infinity loop path points
     const createInfinityPath = () => {
       const points = [];
@@ -67,6 +76,7 @@ const CinematicExperience: React.FC = () => {
         points.push(new THREE.Vector3(x, y, z));
       }
       
+      console.log(`CinematicExperience: Created infinity path with ${points.length} points`);
       return points;
     };
 
@@ -107,6 +117,8 @@ const CinematicExperience: React.FC = () => {
       }
     }
 
+    console.log(`CinematicExperience: Created particle system with ${particleCount} particles`);
+
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
@@ -131,6 +143,8 @@ const CinematicExperience: React.FC = () => {
     camera.position.set(0, 0, 10);
     camera.lookAt(0, 0, 0);
 
+    console.log('CinematicExperience: Setting up mouse controls');
+
     // Mouse movement handler
     const handleMouseMove = (event: MouseEvent) => {
       mouseRef.current.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -138,6 +152,8 @@ const CinematicExperience: React.FC = () => {
     };
 
     window.addEventListener('mousemove', handleMouseMove);
+
+    console.log('CinematicExperience: Creating floating text elements');
 
     // Create floating text elements
     const textElements: HTMLElement[] = [];
@@ -153,6 +169,10 @@ const CinematicExperience: React.FC = () => {
       containerRef.current?.appendChild(textEl);
       textElements.push(textEl);
     });
+
+    console.log(`CinematicExperience: Created ${textElements.length} text elements`);
+
+    console.log('CinematicExperience: Setting up GSAP ScrollTrigger animations');
 
     // GSAP ScrollTrigger for camera movement and text reveals
     ScrollTrigger.create({
@@ -209,6 +229,8 @@ const CinematicExperience: React.FC = () => {
       });
     });
 
+    console.log('CinematicExperience: Starting animation loop');
+
     // Animation loop
     const animate = () => {
       timeRef.current += 0.01;
@@ -241,13 +263,17 @@ const CinematicExperience: React.FC = () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        console.log('CinematicExperience: Resized to', window.innerWidth, 'x', window.innerHeight);
       }
     };
 
     window.addEventListener('resize', handleResize);
 
+    console.log('CinematicExperience: Initialization complete');
+
     // Cleanup
     return () => {
+      console.log('CinematicExperience: Cleaning up');
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());

@@ -21,6 +21,16 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    include: ['three']
+    include: ['three', 'gsap']
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three'],
+          gsap: ['gsap']
+        }
+      }
+    }
+  }
 }));
