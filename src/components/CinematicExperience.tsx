@@ -6,10 +6,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-interface FloatingText {
+interface TextElement {
   element: HTMLElement;
-  position: THREE.Vector3;
-  opacity: number;
+  worldPosition: THREE.Vector3;
+  pathIndex: number;
+  visible: boolean;
 }
 
 const CinematicExperience: React.FC = () => {
@@ -22,6 +23,8 @@ const CinematicExperience: React.FC = () => {
   const timeRef = useRef(0);
   const scrollProgressRef = useRef(0);
   const mouseRef = useRef({ x: 0, y: 0 });
+  const pathPointsRef = useRef<THREE.Vector3[]>([]);
+  const textElementsRef = useRef<TextElement[]>([]);
 
   const storyTexts = [
     "AI systems and digital experiences for tomorrow's leading brands.",
@@ -82,6 +85,8 @@ const CinematicExperience: React.FC = () => {
 
     // Create particle system along infinity path
     const pathPoints = createInfinityPath();
+    pathPointsRef.current = pathPoints;
+    
     const particleCount = 1000;
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
@@ -153,28 +158,109 @@ const CinematicExperience: React.FC = () => {
 
     window.addEventListener('mousemove', handleMouseMove);
 
-    console.log('CinematicExperience: Creating floating text elements');
+    console.log('CinematicExperience: Creating 3D positioned text elements');
 
-    // Create floating text elements
-    const textElements: HTMLElement[] = [];
+    // Create text elements positioned along the path
+    const textElements: TextElement[] = [];
     storyTexts.forEach((text, index) => {
+      // Distribute text elements evenly along the path
+      const pathIndex = Math.floor((index / storyTexts.length) * pathPoints.length);
+      const worldPosition = pathPoints[pathIndex].clone();
+      
+      // Offset text slightly away from the path for better visibility
+      worldPosition.add(new THREE.Vector3(0, 1.5, 0.5));
+      
       const textEl = document.createElement('div');
       textEl.textContent = text;
-      textEl.className = 'fixed text-white text-xl md:text-3xl font-light text-center max-w-4xl px-8 pointer-events-none z-10';
-      textEl.style.left = '50%';
-      textEl.style.top = '50%';
-      textEl.style.transform = 'translate(-50%, -50%)';
+      textEl.className = 'fixed text-white text-xl md:text-3xl font-light text-center max-w-4xl px-8 pointer-events-none z-10 transition-all duration-500 ease-out';
       textEl.style.opacity = '0';
       textEl.style.fontFamily = 'Inter, sans-serif';
+      textEl.style.transform = 'translate(-50%, -50%) scale(0.8)';
+      textEl.style.textShadow = '0 0 20px rgba(63, 193, 201, 0.5)';
+      textEl.style.filter = 'blur(4px)';
+      
       containerRef.current?.appendChild(textEl);
-      textElements.push(textEl);
+      
+      textElements.push({
+        element: textEl,
+        worldPosition,
+        pathIndex,
+        visible: false
+      });
     });
 
-    console.log(`CinematicExperience: Created ${textElements.length} text elements`);
+    textElementsRef.current = textElements;
+    console.log(`CinematicExperience: Created ${textElements.length} 3D positioned text elements`);
+
+    // Function to convert 3D world position to screen coordinates
+    const worldToScreen = (worldPosition: THREE.Vector3, camera: THREE.Camera) => {
+      const vector = worldPosition.clone();
+      vector.project(camera);
+      
+      const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+      const y = (vector.y * -0.5 + 0.5) * window.innerHeight;
+      
+      return { x, y, z: vector.z };
+    };
+
+    // Function to update text positions and visibility
+    const updateTextElements = () => {
+      if (!cameraRef.current) return;
+      
+      textElements.forEach((textElement, index) => {
+        const distance = cameraRef.current!.position.distanceTo(textElement.worldPosition);
+        const maxDistance = 8;
+        const fadeDistance = 3;
+        
+        // Calculate opacity based on distance
+        let opacity = 0;
+        if (distance <= fadeDistance) {
+          opacity = 1;
+        } else if (distance <= maxDistance) {
+          opacity = 1 - ((distance - fadeDistance) / (maxDistance - fadeDistance));
+        }
+        
+        // Calculate scale based on distance (closer = larger)
+        const scale = Math.max(0.5, Math.min(1.2, (maxDistance - distance) / maxDistance + 0.3));
+        
+        // Convert world position to screen coordinates
+        const screenPos = worldToScreen(textElement.worldPosition, cameraRef.current!);
+        
+        // Only show text if it's in front of the camera and within range
+        const shouldShow = screenPos.z > -1 && screenPos.z < 1 && opacity > 0.1;
+        
+        if (shouldShow !== textElement.visible) {
+          textElement.visible = shouldShow;
+          
+          if (shouldShow) {
+            // Animate words in staggered fashion
+            const words = textElement.element.textContent?.split(' ') || [];
+            textElement.element.innerHTML = words.map((word, wordIndex) => 
+              `<span style="opacity: 0; transition: opacity 0.3s ease ${wordIndex * 0.1}s;">${word}</span>`
+            ).join(' ');
+            
+            // Trigger word animations
+            setTimeout(() => {
+              const spans = textElement.element.querySelectorAll('span');
+              spans.forEach(span => {
+                (span as HTMLElement).style.opacity = '1';
+              });
+            }, 100);
+          }
+        }
+        
+        // Update position and style
+        textElement.element.style.left = `${screenPos.x}px`;
+        textElement.element.style.top = `${screenPos.y}px`;
+        textElement.element.style.opacity = shouldShow ? opacity.toString() : '0';
+        textElement.element.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        textElement.element.style.filter = `blur(${Math.max(0, (1 - opacity) * 4)}px)`;
+      });
+    };
 
     console.log('CinematicExperience: Setting up GSAP ScrollTrigger animations');
 
-    // GSAP ScrollTrigger for camera movement and text reveals
+    // GSAP ScrollTrigger for camera movement
     ScrollTrigger.create({
       trigger: containerRef.current,
       start: 'top top',
@@ -200,33 +286,11 @@ const CinematicExperience: React.FC = () => {
           if (lookAtPoint) {
             camera.lookAt(lookAtPoint);
           }
+          
+          // Update text elements after camera movement
+          updateTextElements();
         }
       }
-    });
-
-    // Text reveal animations
-    textElements.forEach((textEl, index) => {
-      const startProgress = (index / textElements.length) * 0.8;
-      const endProgress = startProgress + 0.15;
-      
-      ScrollTrigger.create({
-        trigger: containerRef.current,
-        start: `${startProgress * 100}% top`,
-        end: `${endProgress * 100}% top`,
-        scrub: 1,
-        onUpdate: (self) => {
-          const textProgress = Math.max(0, Math.min(1, (self.progress - startProgress) / (endProgress - startProgress)));
-          textEl.style.opacity = textProgress.toString();
-          
-          // Staggered word animation
-          const words = textEl.textContent?.split(' ') || [];
-          textEl.innerHTML = words.map((word, wordIndex) => {
-            const wordDelay = wordIndex * 0.1;
-            const wordOpacity = Math.max(0, Math.min(1, (textProgress - wordDelay) / 0.3));
-            return `<span style="opacity: ${wordOpacity}; transition: opacity 0.3s ease;">${word}</span>`;
-          }).join(' ');
-        }
-      });
     });
 
     console.log('CinematicExperience: Starting animation loop');
@@ -250,6 +314,9 @@ const CinematicExperience: React.FC = () => {
           cameraRef.current.rotation.y += (mouseRef.current.x * mouseInfluence - cameraRef.current.rotation.y) * 0.05;
         }
       }
+      
+      // Update text positions continuously
+      updateTextElements();
       
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
@@ -277,7 +344,7 @@ const CinematicExperience: React.FC = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-      textElements.forEach(el => el.remove());
+      textElements.forEach(({ element }) => element.remove());
       geometry.dispose();
       material.dispose();
       renderer.dispose();
