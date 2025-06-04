@@ -1,13 +1,10 @@
 
 import React, { useRef, useState, useEffect, Suspense } from 'react';
-import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './CosmicLogoAssembly.scss';
-
-gsap.registerPlugin(ScrollTrigger);
 
 // Particle Background Component
 const CosmicParticles: React.FC = () => {
