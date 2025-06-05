@@ -1,9 +1,13 @@
-
 import React, { useRef, useState, useEffect, Suspense } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { Points, PointMaterial, Text3D, Center } from '@react-three/drei';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
+import CosmicInfoSection from './CosmicInfoSection';
+import CosmicMetrics from './CosmicMetrics';
+import CosmicServices from './CosmicServices';
+import CosmicContact from './CosmicContact';
+import CosmicNavigation from './CosmicNavigation';
 import './CosmicLogoAssembly.scss';
 
 // Nebula Background Component with proper texture
@@ -133,7 +137,7 @@ const CosmicLoader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
 
   return (
     <div className="cosmic-loader">
-      <h1>Entering the Void...</h1>
+      <h1>Entering the AI8TY Universe...</h1>
       <div className="loader-particles">
         {Array.from({ length: 20 }).map((_, i) => (
           <div key={i} className="particle" style={{ animationDelay: `${i * 0.1}s` }} />
@@ -144,11 +148,10 @@ const CosmicLoader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
 };
 
 // Logo Assembly Animation Component
-const LogoInfinityAnimation: React.FC = () => {
+const LogoInfinityAnimation: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const infinityRef = useRef<SVGPathElement>(null);
   const aiRef = useRef<HTMLSpanElement>(null);
   const tyRef = useRef<HTMLSpanElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
   const aiOrbitRef = useRef<HTMLDivElement>(null);
   const tyOrbitRef = useRef<HTMLDivElement>(null);
 
@@ -235,6 +238,10 @@ const LogoInfinityAnimation: React.FC = () => {
         );
     }, 3000); // Start lock-in exactly when loader completes
 
+    // Add callback to onComplete when animation finishes
+    setTimeout(() => {
+      onComplete();
+    }, 8000); // Complete logo animation in 8 seconds
   }, []);
 
   return (
@@ -277,7 +284,16 @@ const LogoInfinityAnimation: React.FC = () => {
 // Main Cosmic Logo Assembly Component
 const CosmicLogoAssembly: React.FC = () => {
   const [showLoader, setShowLoader] = useState(true);
+  const [currentSection, setCurrentSection] = useState(0);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  
+  // Section visibility states
+  const [showLogo, setShowLogo] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+  const [showMetrics, setShowMetrics] = useState(false);
+  const [showServices, setShowServices] = useState(false);
+  const [showContact, setShowContact] = useState(false);
+  const [showNavigation, setShowNavigation] = useState(false);
 
   // Initialize ambient sound after loader
   useEffect(() => {
@@ -313,7 +329,6 @@ const CosmicLogoAssembly: React.FC = () => {
         }
       };
 
-      // Add slight delay for better UX
       setTimeout(initAmbientSound, 500);
     }
 
@@ -324,9 +339,50 @@ const CosmicLogoAssembly: React.FC = () => {
     };
   }, [showLoader, audioContext]);
 
+  const handleLoaderComplete = () => {
+    setShowLoader(false);
+    setShowLogo(true);
+  };
+
+  const handleLogoComplete = () => {
+    setShowInfo(true);
+    setShowNavigation(true);
+  };
+
+  const handleSectionChange = (section: number) => {
+    setCurrentSection(section);
+    
+    // Reset all sections
+    setShowInfo(false);
+    setShowMetrics(false);
+    setShowServices(false);
+    setShowContact(false);
+    
+    // Show selected section
+    setTimeout(() => {
+      switch (section) {
+        case 0:
+          setShowLogo(true);
+          break;
+        case 1:
+          setShowInfo(true);
+          break;
+        case 2:
+          setShowMetrics(true);
+          break;
+        case 3:
+          setShowServices(true);
+          break;
+        case 4:
+          setShowContact(true);
+          break;
+      }
+    }, 300);
+  };
+
   return (
     <div className="cosmic-app">
-      {showLoader && <CosmicLoader onComplete={() => setShowLoader(false)} />}
+      {showLoader && <CosmicLoader onComplete={handleLoaderComplete} />}
       
       {!showLoader && (
         <>
@@ -340,7 +396,36 @@ const CosmicLogoAssembly: React.FC = () => {
               </Suspense>
             </Canvas>
           </div>
-          <LogoInfinityAnimation />
+          
+          {showLogo && currentSection === 0 && (
+            <LogoInfinityAnimation onComplete={handleLogoComplete} />
+          )}
+          
+          <CosmicInfoSection 
+            isVisible={showInfo && currentSection === 1} 
+            onComplete={() => {}} 
+          />
+          
+          <CosmicMetrics 
+            isVisible={showMetrics && currentSection === 2} 
+            onComplete={() => {}} 
+          />
+          
+          <CosmicServices 
+            isVisible={showServices && currentSection === 3} 
+            onComplete={() => {}} 
+          />
+          
+          <CosmicContact 
+            isVisible={showContact && currentSection === 4} 
+            onComplete={() => {}} 
+          />
+          
+          <CosmicNavigation
+            isVisible={showNavigation}
+            currentSection={currentSection}
+            onSectionChange={handleSectionChange}
+          />
         </>
       )}
     </div>
