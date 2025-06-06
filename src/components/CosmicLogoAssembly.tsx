@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect, Suspense } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { Points, PointMaterial, Text3D, Center } from '@react-three/drei';
@@ -154,6 +155,7 @@ const LogoInfinityAnimation: React.FC<{ onComplete: () => void }> = ({ onComplet
   const tyRef = useRef<HTMLSpanElement>(null);
   const aiOrbitRef = useRef<HTMLDivElement>(null);
   const tyOrbitRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null); // Add missing ctaRef
 
   useEffect(() => {
     // Master timeline for coordinated animations
@@ -242,7 +244,7 @@ const LogoInfinityAnimation: React.FC<{ onComplete: () => void }> = ({ onComplet
     setTimeout(() => {
       onComplete();
     }, 8000); // Complete logo animation in 8 seconds
-  }, []);
+  }, [onComplete]);
 
   return (
     <div className="infinity-container">
