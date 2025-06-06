@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect, Suspense } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { Points, PointMaterial, Text3D, Center } from '@react-three/drei';
@@ -10,6 +9,10 @@ import CosmicServices from './CosmicServices';
 import CosmicContact from './CosmicContact';
 import CosmicNavigation from './CosmicNavigation';
 import './CosmicLogoAssembly.scss';
+import Enhanced3DText from './Enhanced3DText';
+import EnhancedNebulaBackground from './EnhancedNebulaBackground';
+import PerformanceOptimizedParticles from './PerformanceOptimizedParticles';
+import AssetPreloader from './AssetPreloader';
 
 // Nebula Background Component with proper texture
 const NebulaBackground: React.FC = () => {
@@ -58,12 +61,15 @@ const NebulaBackground: React.FC = () => {
   );
 };
 
-// Text Particles Component with actual 3D text
+// Updated Text Particles Component with performance optimizations
 const TextParticles: React.FC = () => {
   const groupRef = useRef<THREE.Group>(null);
   
   const textElements = React.useMemo(() => {
-    return Array.from({ length: 30 }, (_, i) => ({
+    const isMobile = window.innerWidth < 768;
+    const elementCount = isMobile ? 15 : 30; // Reduce on mobile
+    
+    return Array.from({ length: elementCount }, (_, i) => ({
       text: Math.random() > 0.5 ? 'AI' : '∞',
       position: [
         (Math.random() - 0.5) * 100,
@@ -85,17 +91,13 @@ const TextParticles: React.FC = () => {
   return (
     <group ref={groupRef}>
       {textElements.map((element) => (
-        <Center key={element.key} position={element.position}>
-          <Text3D
-            font="/fonts/helvetiker_regular.typeface.json"
-            size={element.scale}
-            height={0.1}
-            curveSegments={12}
-          >
-            {element.text}
-            <meshBasicMaterial color="#3FC1C9" transparent opacity={0.6} />
-          </Text3D>
-        </Center>
+        <Enhanced3DText
+          key={element.key}
+          text={element.text}
+          position={element.position}
+          scale={element.scale}
+          color="#3FC1C9"
+        />
       ))}
     </group>
   );
@@ -283,11 +285,12 @@ const LogoInfinityAnimation: React.FC<{ onComplete: () => void }> = ({ onComplet
   );
 };
 
-// Main Cosmic Logo Assembly Component
+// Main Cosmic Logo Assembly Component with performance enhancements
 const CosmicLogoAssembly: React.FC = () => {
   const [showLoader, setShowLoader] = useState(true);
   const [currentSection, setCurrentSection] = useState(0);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [assetsLoaded, setAssetsLoaded] = useState(false);
   
   // Section visibility states
   const [showLogo, setShowLogo] = useState(false);
@@ -299,12 +302,12 @@ const CosmicLogoAssembly: React.FC = () => {
 
   // Initialize ambient sound after loader
   useEffect(() => {
-    if (!showLoader && !audioContext) {
+    if (!showLoader && !audioContext && assetsLoaded) {
       const initAmbientSound = async () => {
         try {
           const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
           
-          // Create ambient hum
+          // Create ambient hum with better parameters
           const oscillator = audioCtx.createOscillator();
           const gainNode = audioCtx.createGain();
           const filter = audioCtx.createBiquadFilter();
@@ -316,7 +319,7 @@ const CosmicLogoAssembly: React.FC = () => {
           filter.frequency.setValueAtTime(300, audioCtx.currentTime);
           
           gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-          gainNode.gain.linearRampToValueAtTime(0.03, audioCtx.currentTime + 2);
+          gainNode.gain.linearRampToValueAtTime(0.02, audioCtx.currentTime + 3);
           
           oscillator.connect(filter);
           filter.connect(gainNode);
@@ -325,7 +328,7 @@ const CosmicLogoAssembly: React.FC = () => {
           oscillator.start();
           setAudioContext(audioCtx);
           
-          console.log('Ambient audio initialized');
+          console.log('Enhanced ambient audio initialized');
         } catch (error) {
           console.log('Audio context not supported or blocked:', error);
         }
@@ -339,7 +342,11 @@ const CosmicLogoAssembly: React.FC = () => {
         audioContext.close();
       }
     };
-  }, [showLoader, audioContext]);
+  }, [showLoader, audioContext, assetsLoaded]);
+
+  const handleAssetsLoaded = () => {
+    setAssetsLoaded(true);
+  };
 
   const handleLoaderComplete = () => {
     setShowLoader(false);
@@ -389,14 +396,21 @@ const CosmicLogoAssembly: React.FC = () => {
       {!showLoader && (
         <>
           <div className="canvas-container">
-            <Canvas camera={{ position: [0, 0, 50], fov: 75 }}>
-              <Suspense fallback={null}>
-                <NebulaBackground />
-                <CosmicParticles />
-                <TextParticles />
-                <ambientLight intensity={0.2} color="#3FC1C9" />
-              </Suspense>
-            </Canvas>
+            <AssetPreloader onComplete={handleAssetsLoaded}>
+              <Canvas 
+                camera={{ position: [0, 0, 50], fov: 75 }}
+                performance={{ min: 0.5 }}
+                dpr={Math.min(window.devicePixelRatio, 2)}
+              >
+                <Suspense fallback={null}>
+                  <EnhancedNebulaBackground />
+                  <PerformanceOptimizedParticles count={1500} spread={200} />
+                  <TextParticles />
+                  <ambientLight intensity={0.3} color="#3FC1C9" />
+                  <pointLight position={[10, 10, 10]} intensity={0.5} color="#ffffff" />
+                </Suspense>
+              </Canvas>
+            </AssetPreloader>
           </div>
           
           {showLogo && currentSection === 0 && (
