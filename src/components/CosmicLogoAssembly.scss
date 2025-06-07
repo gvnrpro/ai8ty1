@@ -1,10 +1,10 @@
 .cosmic-app {
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow-x: hidden;
   background: #000;
   color: white;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   position: relative;
   font-family: 'Space Grotesk', sans-serif;
@@ -222,24 +222,15 @@
   }
 }
 
-// Cosmic Information Section
+// Enhanced Cosmic Information Section
 .cosmic-info-section {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
+  width: 100%;
   text-align: center;
-  max-width: 1200px;
-  padding: 2rem;
   
   .info-content {
-    background: rgba(10, 10, 10, 0.8);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(63, 193, 201, 0.3);
-    border-radius: 20px;
-    padding: 3rem;
-    box-shadow: 0 20px 40px rgba(63, 193, 201, 0.1);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
   }
   
   .cosmic-title {
@@ -305,112 +296,10 @@
   }
 }
 
-// Cosmic Metrics
-.cosmic-metrics {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  text-align: center;
-  max-width: 1400px;
-  padding: 2rem;
-  
-  .metrics-title {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 3rem;
-    color: white;
-    
-    .text-gradient {
-      background: linear-gradient(45deg, #3FC1C9, #fff, #3FC1C9);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-  }
-  
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-  }
-  
-  .metric-card {
-    background: rgba(10, 10, 10, 0.8);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(63, 193, 201, 0.3);
-    border-radius: 20px;
-    padding: 2.5rem;
-    position: relative;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      transform: scale(1.05);
-      border-color: rgba(63, 193, 201, 0.5);
-      box-shadow: 0 20px 40px rgba(63, 193, 201, 0.2);
-    }
-    
-    .metric-value {
-      font-size: 3rem;
-      font-weight: 700;
-      color: #3FC1C9;
-      margin-bottom: 1rem;
-      font-family: 'Space Grotesk', monospace;
-    }
-    
-    .metric-label {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: white;
-    }
-    
-    .metric-description {
-      font-size: 0.9rem;
-      opacity: 0.7;
-      margin-bottom: 1.5rem;
-    }
-    
-    .metric-ring {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      width: 50px;
-      height: 50px;
-    }
-    
-    .circular-chart {
-      width: 100%;
-      height: 100%;
-    }
-    
-    .circle-bg {
-      fill: none;
-      stroke: rgba(63, 193, 201, 0.2);
-      stroke-width: 2;
-    }
-    
-    .circle {
-      fill: none;
-      stroke: #3FC1C9;
-      stroke-width: 2;
-      stroke-linecap: round;
-      transition: stroke-dasharray 1s ease-out;
-    }
-  }
-}
-
-// Cosmic Services
+// Enhanced Cosmic Services
 .cosmic-services {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
+  width: 100%;
   text-align: center;
-  max-width: 1400px;
-  padding: 2rem;
   
   .services-title {
     font-size: 3rem;
@@ -430,6 +319,9 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
   }
   
   .service-card {
@@ -510,16 +402,10 @@
   }
 }
 
-// Cosmic Contact
+// Enhanced Cosmic Contact
 .cosmic-contact {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
+  width: 100%;
   text-align: center;
-  max-width: 1200px;
-  padding: 2rem;
   
   .contact-title {
     font-size: 3rem;
@@ -540,6 +426,10 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     margin-bottom: 3rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 2rem;
   }
   
   .contact-item {
@@ -613,6 +503,8 @@
     border: 1px solid rgba(63, 193, 201, 0.2);
     border-radius: 15px;
     padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
     
     p {
       font-size: 1.2rem;
@@ -714,70 +606,28 @@
     font-size: 2rem;
   }
   
-  .infinity-container svg {
-    width: 350px;
-    height: 200px;
-  }
-  
-  .logo-text {
-    font-size: 3rem;
-    gap: 2rem;
-    margin-top: -150px;
-  }
-  
-  .cta {
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    
-    button {
-      padding: 0.8rem 1.5rem;
-      font-size: 1rem;
-      width: 200px;
-    }
-  }
-  
   .cosmic-info-section,
-  .cosmic-metrics,
   .cosmic-services,
   .cosmic-contact {
-    padding: 1rem;
-    max-width: 95vw;
+    .cosmic-title,
+    .services-title,
+    .contact-title {
+      font-size: 2.5rem !important;
+    }
     
     .info-content,
     .contact-item {
-      padding: 2rem;
-    }
-  }
-  
-  .cosmic-title,
-  .metrics-title,
-  .services-title,
-  .contact-title {
-    font-size: 2.5rem !important;
-  }
-  
-  .cosmic-navigation {
-    .nav-container {
-      gap: 0.5rem;
-      padding: 0.8rem;
+      padding: 1.5rem;
     }
     
-    .nav-item {
-      padding: 0.8rem 1rem;
-      
-      .nav-label {
-        display: none;
-      }
+    .services-grid,
+    .contact-content {
+      grid-template-columns: 1fr !important;
+      padding: 0 1rem;
     }
   }
   
-  .services-grid,
-  .metrics-grid {
-    grid-template-columns: 1fr !important;
-  }
-  
-  .contact-content {
+  .service-preview-grid {
     grid-template-columns: 1fr !important;
   }
 }

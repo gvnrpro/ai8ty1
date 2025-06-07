@@ -1,6 +1,7 @@
 
 @import url('./styles/accessibility.css');
 @import url('./styles/design-system.css');
+@import url('./styles/futuristic-enhancements.css');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -71,6 +72,7 @@
     font-family: var(--ai8ty-font-primary);
     background: var(--ai8ty-bg-primary);
     color: var(--ai8ty-text-primary);
+    overflow-x: hidden;
   }
 }
 
