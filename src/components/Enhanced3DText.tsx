@@ -17,7 +17,7 @@ const Enhanced3DText: React.FC<Enhanced3DTextProps> = ({
   color = "#3FC1C9" 
 }) => {
   // Create fallback geometry for when font fails to load
-  const createFallbackGeometry = () => {
+  const createFallbackTexture = () => {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d')!;
     canvas.width = 256;
@@ -39,16 +39,12 @@ const Enhanced3DText: React.FC<Enhanced3DTextProps> = ({
         size={scale}
         height={0.1}
         curveSegments={12}
-        onError={() => {
-          console.log('Font loading failed, using fallback');
-        }}
       >
         {text}
         <meshBasicMaterial 
           color={color} 
           transparent 
           opacity={0.8}
-          map={createFallbackGeometry()}
         />
       </Text3D>
     </Center>

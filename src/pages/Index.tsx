@@ -2,10 +2,10 @@
 import React from 'react';
 import CosmicLogoAssembly from '../components/CosmicLogoAssembly';
 import ReducedMotionFallback from '../components/ReducedMotionFallback';
-import { usePreferredMotion } from '../hooks/usePreferredMotion';
+import { useAccessibility } from '../components/AccessibilityProvider';
 
 const Index = () => {
-  const prefersReducedMotion = usePreferredMotion();
+  const { prefersReducedMotion } = useAccessibility();
 
   if (prefersReducedMotion) {
     return <ReducedMotionFallback />;
