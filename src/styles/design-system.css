@@ -1,0 +1,152 @@
+
+/* AI8TY Design System - Unified styling approach */
+
+:root {
+  /* Color Palette */
+  --ai8ty-primary: #3FC1C9;
+  --ai8ty-primary-dark: #2A9BA3;
+  --ai8ty-primary-light: #5DD3DB;
+  --ai8ty-secondary: #8A2BE2;
+  --ai8ty-secondary-dark: #6A1BB2;
+  --ai8ty-secondary-light: #AA4BF2;
+  
+  /* Background Colors */
+  --ai8ty-bg-primary: #0A0A0A;
+  --ai8ty-bg-secondary: #1a0a2e;
+  --ai8ty-bg-surface: rgba(10, 10, 10, 0.8);
+  --ai8ty-bg-card: rgba(63, 193, 201, 0.05);
+  --ai8ty-bg-hover: rgba(63, 193, 201, 0.1);
+  
+  /* Text Colors */
+  --ai8ty-text-primary: #F0F0F0;
+  --ai8ty-text-secondary: rgba(240, 240, 240, 0.8);
+  --ai8ty-text-muted: rgba(240, 240, 240, 0.6);
+  --ai8ty-text-accent: #3FC1C9;
+  
+  /* Border & Effects */
+  --ai8ty-border: rgba(63, 193, 201, 0.3);
+  --ai8ty-border-hover: rgba(63, 193, 201, 0.5);
+  --ai8ty-glow: 0 0 20px rgba(63, 193, 201, 0.3);
+  --ai8ty-glow-strong: 0 0 30px rgba(63, 193, 201, 0.5);
+  
+  /* Spacing */
+  --ai8ty-space-xs: 0.5rem;
+  --ai8ty-space-sm: 1rem;
+  --ai8ty-space-md: 1.5rem;
+  --ai8ty-space-lg: 2rem;
+  --ai8ty-space-xl: 3rem;
+  --ai8ty-space-2xl: 4rem;
+  
+  /* Typography */
+  --ai8ty-font-primary: 'Space Grotesk', system-ui, sans-serif;
+  --ai8ty-font-mono: 'Space Grotesk', monospace;
+  
+  /* Animations */
+  --ai8ty-transition-fast: 0.2s ease-out;
+  --ai8ty-transition-normal: 0.3s ease-out;
+  --ai8ty-transition-slow: 0.5s ease-out;
+  
+  /* Z-index layers */
+  --ai8ty-z-background: 1;
+  --ai8ty-z-content: 10;
+  --ai8ty-z-navigation: 20;
+  --ai8ty-z-modal: 100;
+  --ai8ty-z-loader: 999;
+}
+
+/* Design System Utility Classes */
+.ai8ty-card {
+  background: var(--ai8ty-bg-surface);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--ai8ty-border);
+  border-radius: 20px;
+  padding: var(--ai8ty-space-lg);
+  transition: all var(--ai8ty-transition-normal);
+}
+
+.ai8ty-card:hover {
+  border-color: var(--ai8ty-border-hover);
+  box-shadow: var(--ai8ty-glow);
+  transform: translateY(-5px);
+}
+
+.ai8ty-button {
+  background: transparent;
+  border: 2px solid var(--ai8ty-primary);
+  color: var(--ai8ty-primary);
+  padding: var(--ai8ty-space-sm) var(--ai8ty-space-lg);
+  font-family: var(--ai8ty-font-primary);
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all var(--ai8ty-transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.ai8ty-button:hover {
+  background: var(--ai8ty-bg-hover);
+  color: var(--ai8ty-text-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--ai8ty-glow);
+}
+
+.ai8ty-button--primary {
+  background: var(--ai8ty-primary);
+  color: var(--ai8ty-bg-primary);
+}
+
+.ai8ty-button--primary:hover {
+  background: var(--ai8ty-text-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--ai8ty-glow-strong);
+}
+
+.ai8ty-text-gradient {
+  background: linear-gradient(45deg, var(--ai8ty-primary), var(--ai8ty-text-primary), var(--ai8ty-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ai8ty-glow {
+  filter: drop-shadow(var(--ai8ty-glow));
+}
+
+.ai8ty-section {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: var(--ai8ty-z-content);
+  text-align: center;
+  max-width: 1400px;
+  padding: var(--ai8ty-space-lg);
+  width: 100%;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+  :root {
+    --ai8ty-space-xs: 0.25rem;
+    --ai8ty-space-sm: 0.5rem;
+    --ai8ty-space-md: 1rem;
+    --ai8ty-space-lg: 1.5rem;
+    --ai8ty-space-xl: 2rem;
+    --ai8ty-space-2xl: 2.5rem;
+  }
+  
+  .ai8ty-section {
+    padding: var(--ai8ty-space-sm);
+    max-width: 95vw;
+  }
+  
+  .ai8ty-card {
+    padding: var(--ai8ty-space-md);
+  }
+  
+  .ai8ty-button {
+    padding: var(--ai8ty-space-xs) var(--ai8ty-space-md);
+    font-size: 0.9rem;
+  }
+}

@@ -1,5 +1,6 @@
 
 @import url('./styles/accessibility.css');
+@import url('./styles/design-system.css');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -67,17 +68,10 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    font-family: var(--ai8ty-font-primary);
+    background: var(--ai8ty-bg-primary);
+    color: var(--ai8ty-text-primary);
   }
-}
-
-/* Custom AI8TY theme variables */
-:root {
-  --ai8ty-primary: #3FC1C9;
-  --ai8ty-background: #0A0A0A;
-  --ai8ty-surface: #1a0a2e;
-  --ai8ty-text: #F0F0F0;
-  --ai8ty-accent: #8A2BE2;
 }
 
 /* Performance optimizations */
@@ -88,4 +82,42 @@
 canvas {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: optimize-contrast;
+}
+
+/* Smooth scrolling for better UX */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* Reduce motion for mobile performance */
+  *, *::before, *::after {
+    animation-duration: 0.5s !important;
+    transition-duration: 0.3s !important;
+  }
+}
+
+/* Touch targets for mobile */
+@media (hover: none) and (pointer: coarse) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* High contrast mode improvements */
+@media (prefers-contrast: high) {
+  .ai8ty-card {
+    border-width: 2px;
+  }
+  
+  .ai8ty-button {
+    border-width: 3px;
+  }
 }

@@ -8,11 +8,14 @@ import CosmicMetrics from './CosmicMetrics';
 import CosmicServices from './CosmicServices';
 import CosmicContact from './CosmicContact';
 import CosmicNavigation from './CosmicNavigation';
-import './CosmicLogoAssembly.scss';
 import Enhanced3DText from './Enhanced3DText';
 import EnhancedNebulaBackground from './EnhancedNebulaBackground';
 import PerformanceOptimizedParticles from './PerformanceOptimizedParticles';
 import AssetPreloader from './AssetPreloader';
+import CameraTransition from './CameraTransition';
+import InteractiveServiceCard from './InteractiveServiceCard';
+import ContactForm from './ContactForm';
+import './CosmicLogoAssembly.scss';
 
 // Nebula Background Component with proper texture
 const NebulaBackground: React.FC = () => {
@@ -150,68 +153,63 @@ const CosmicLoader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   );
 };
 
-// Logo Assembly Animation Component
+// Logo Assembly Animation Component with better mobile support
 const LogoInfinityAnimation: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const infinityRef = useRef<SVGPathElement>(null);
   const aiRef = useRef<HTMLSpanElement>(null);
   const tyRef = useRef<HTMLSpanElement>(null);
   const aiOrbitRef = useRef<HTMLDivElement>(null);
   const tyOrbitRef = useRef<HTMLDivElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null); // Add missing ctaRef
+  const ctaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Master timeline for coordinated animations
+    const isMobile = window.innerWidth < 768;
     const masterTl = gsap.timeline();
     
-    // Phase 1: Initial orbit animations (start immediately)
+    // Adjusted timing for mobile
     const orbitTl = gsap.timeline({ repeat: -1 });
     
     if (aiOrbitRef.current && tyOrbitRef.current) {
-      // AI orbits on the left side of infinity
+      const duration = isMobile ? 1.5 : 2; // Faster on mobile
       orbitTl.to(aiOrbitRef.current, {
         rotation: 360,
         transformOrigin: "center center",
-        duration: 2,
+        duration,
         ease: "linear",
       });
       
-      // TY orbits on the right side of infinity (opposite direction)
       orbitTl.to(tyOrbitRef.current, {
         rotation: -360,
         transformOrigin: "center center",
-        duration: 2,
+        duration,
         ease: "linear",
       }, "<");
     }
 
-    // Orbit particles animation
     gsap.to(".orbit-particle", {
       rotation: 360,
       transformOrigin: "center center",
       repeat: -1,
-      duration: 2,
+      duration: isMobile ? 1.5 : 2,
       ease: "linear",
     });
 
-    // Phase 2: Lock-in sequence (start at 3 seconds after loader)
     setTimeout(() => {
-      orbitTl.kill(); // Stop orbiting
+      orbitTl.kill();
       
       masterTl
-        // Lock AI and TY into position
         .to([aiOrbitRef.current, tyOrbitRef.current], {
           rotation: 0,
           x: 0,
           y: 0,
-          duration: 1.5,
+          duration: isMobile ? 1 : 1.5,
           ease: "elastic.out(1, 0.3)",
         })
-        // Draw infinity symbol (rotated to look like 8)
         .fromTo(infinityRef.current, 
           { strokeDasharray: 1000, strokeDashoffset: 1000 },
           { 
             strokeDashoffset: 0, 
-            duration: 2.5,
+            duration: isMobile ? 2 : 2.5,
             ease: "power2.out",
             onStart: () => {
               if (infinityRef.current) {
@@ -220,7 +218,6 @@ const LogoInfinityAnimation: React.FC<{ onComplete: () => void }> = ({ onComplet
             }
           }
         )
-        // Add pulsing glow effect
         .to(infinityRef.current, {
           opacity: 0.6,
           duration: 1,
@@ -228,7 +225,6 @@ const LogoInfinityAnimation: React.FC<{ onComplete: () => void }> = ({ onComplet
           yoyo: true,
           ease: "sine.inOut",
         })
-        // Fade in call-to-action
         .fromTo(ctaRef.current, 
           { opacity: 0, y: 50, scale: 0.8 },
           { 
@@ -240,18 +236,16 @@ const LogoInfinityAnimation: React.FC<{ onComplete: () => void }> = ({ onComplet
           },
           "-=1"
         );
-    }, 3000); // Start lock-in exactly when loader completes
+    }, 3000);
 
-    // Add callback to onComplete when animation finishes
     setTimeout(() => {
       onComplete();
-    }, 8000); // Complete logo animation in 8 seconds
+    }, isMobile ? 7000 : 8000); // Shorter on mobile
   }, [onComplete]);
 
   return (
     <div className="infinity-container">
-      {/* Rotated infinity symbol to look like "8" */}
-      <svg width="500" height="300" viewBox="0 0 500 300">
+      <svg width="500" height="300" viewBox="0 0 500 300" className="max-w-full h-auto">
         <path
           ref={infinityRef}
           d="M 200 100 C 150 50, 150 150, 200 100 C 250 50, 250 150, 200 100 M 250 150 C 300 100, 300 200, 250 150 C 200 200, 200 100, 250 150"
@@ -278,14 +272,24 @@ const LogoInfinityAnimation: React.FC<{ onComplete: () => void }> = ({ onComplet
       </div>
       
       <div ref={ctaRef} className="cta">
-        <button onClick={() => console.log('Explore clicked')}>Explore Our Work</button>
-        <button onClick={() => console.log('About clicked')}>About AI8TY</button>
+        <button 
+          className="ai8ty-button ai8ty-button--primary"
+          onClick={() => console.log('Explore clicked')}
+        >
+          Explore Our Work
+        </button>
+        <button 
+          className="ai8ty-button"
+          onClick={() => console.log('About clicked')}
+        >
+          About AI8TY
+        </button>
       </div>
     </div>
   );
 };
 
-// Main Cosmic Logo Assembly Component with performance enhancements
+// Main Cosmic Logo Assembly Component
 const CosmicLogoAssembly: React.FC = () => {
   const [showLoader, setShowLoader] = useState(true);
   const [currentSection, setCurrentSection] = useState(0);
@@ -344,6 +348,11 @@ const CosmicLogoAssembly: React.FC = () => {
     };
   }, [showLoader, audioContext, assetsLoaded]);
 
+  const handleFormSubmit = (data: any) => {
+    console.log('Contact form submitted:', data);
+    // Here you would typically send data to your backend
+  };
+
   const handleAssetsLoaded = () => {
     setAssetsLoaded(true);
   };
@@ -359,15 +368,20 @@ const CosmicLogoAssembly: React.FC = () => {
   };
 
   const handleSectionChange = (section: number) => {
+    if (section === currentSection) return;
+    
     setCurrentSection(section);
     
-    // Reset all sections
-    setShowInfo(false);
-    setShowMetrics(false);
-    setShowServices(false);
-    setShowContact(false);
+    // Reset all sections with smooth transitions
+    const hidePromises = [
+      setShowLogo(false),
+      setShowInfo(false),
+      setShowMetrics(false),
+      setShowServices(false),
+      setShowContact(false)
+    ];
     
-    // Show selected section
+    // Show selected section after transition
     setTimeout(() => {
       switch (section) {
         case 0:
@@ -391,18 +405,22 @@ const CosmicLogoAssembly: React.FC = () => {
 
   return (
     <div className="cosmic-app">
-      {showLoader && <CosmicLoader onComplete={handleLoaderComplete} />}
+      {showLoader && <CosmicLoader onComplete={() => {
+        setShowLoader(false);
+        setShowLogo(true);
+      }} />}
       
       {!showLoader && (
         <>
           <div className="canvas-container">
-            <AssetPreloader onComplete={handleAssetsLoaded}>
+            <AssetPreloader onComplete={() => setAssetsLoaded(true)}>
               <Canvas 
                 camera={{ position: [0, 0, 50], fov: 75 }}
                 performance={{ min: 0.5 }}
                 dpr={Math.min(window.devicePixelRatio, 2)}
               >
                 <Suspense fallback={null}>
+                  <CameraTransition currentSection={currentSection} />
                   <EnhancedNebulaBackground />
                   <PerformanceOptimizedParticles count={1500} spread={200} />
                   <TextParticles />
@@ -414,28 +432,79 @@ const CosmicLogoAssembly: React.FC = () => {
           </div>
           
           {showLogo && currentSection === 0 && (
-            <LogoInfinityAnimation onComplete={handleLogoComplete} />
+            <LogoInfinityAnimation onComplete={() => {
+              setShowNavigation(true);
+            }} />
           )}
           
-          <CosmicInfoSection 
-            isVisible={showInfo && currentSection === 1} 
-            onComplete={() => {}} 
-          />
+          {showInfo && currentSection === 1 && (
+            <CosmicInfoSection 
+              isVisible={true} 
+              onComplete={() => {}} 
+            />
+          )}
           
-          <CosmicMetrics 
-            isVisible={showMetrics && currentSection === 2} 
-            onComplete={() => {}} 
-          />
+          {showMetrics && currentSection === 2 && (
+            <CosmicMetrics 
+              isVisible={true} 
+              onComplete={() => {}} 
+            />
+          )}
           
-          <CosmicServices 
-            isVisible={showServices && currentSection === 3} 
-            onComplete={() => {}} 
-          />
+          {showServices && currentSection === 3 && (
+            <div className="ai8ty-section">
+              <h3 className="text-3xl font-bold mb-12 text-white">
+                Our <span className="ai8ty-text-gradient">Services</span>
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <InteractiveServiceCard
+                  icon="⚡"
+                  title="Process Automation"
+                  description="Self-optimizing workflows that adapt to changing demands"
+                  features={[
+                    "Intelligent workflow orchestration",
+                    "Real-time process optimization",
+                    "Adaptive rule engines",
+                    "Performance monitoring"
+                  ]}
+                  delay={0}
+                />
+                <InteractiveServiceCard
+                  icon="🧠"
+                  title="Operational Intelligence"
+                  description="AI systems that learn and evolve with your business"
+                  features={[
+                    "Predictive analytics",
+                    "Anomaly detection",
+                    "Decision support systems",
+                    "Custom AI models"
+                  ]}
+                  delay={0.2}
+                />
+                <InteractiveServiceCard
+                  icon="🔗"
+                  title="System Integration"
+                  description="Unified operational intelligence across platforms"
+                  features={[
+                    "API-first architecture",
+                    "Real-time data synchronization",
+                    "Legacy system modernization",
+                    "Cloud-native solutions"
+                  ]}
+                  delay={0.4}
+                />
+              </div>
+            </div>
+          )}
           
-          <CosmicContact 
-            isVisible={showContact && currentSection === 4} 
-            onComplete={() => {}} 
-          />
+          {showContact && currentSection === 4 && (
+            <div className="ai8ty-section">
+              <h3 className="text-3xl font-bold mb-8 text-white">
+                Ready to <span className="ai8ty-text-gradient">Transform</span>?
+              </h3>
+              <ContactForm onSubmit={handleFormSubmit} />
+            </div>
+          )}
           
           <CosmicNavigation
             isVisible={showNavigation}
